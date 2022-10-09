@@ -11,6 +11,9 @@ you should read and learn and try the programs.
 Demo:
 
 ```
+$ git clone https://github.com/strickyak/golang-demos.git
+$ cd golang-demos
+
 $ go run 01-hello/hello.go
 $ go run 02-func/func.go
 $ go run 03-string/string.go
