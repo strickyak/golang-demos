@@ -35,5 +35,5 @@ func main() {
 	fmt.Printf("Joined quickest gives %q\n", joined)
 	fmt.Printf("... ToUpper gives %q\n", strings.ToUpper(joined))
 	fmt.Printf("... ToLower gives %q\n", strings.ToLower(joined))
-	fmt.Printf("... Split gives %#v\n", strings.Split(joined, "."))
+	fmt.Printf("... Split on `.` gives %#v\n", strings.Split(joined, "."))
 }
