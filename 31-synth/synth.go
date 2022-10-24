@@ -71,4 +71,8 @@ func WriteWavHeader(dataSize int, w io.Writer) {
 func main() {
 	flag.Parse()
 
+	w, err := os.Create(*flagOutputFilename)
+	if err != nil {
+		log.Fatalf("Cannot create %q: %v", *flagOutputFilename, err)
+	}
 }
