@@ -1,15 +1,21 @@
 package main
 
+// Hint: go run synth.go 220 440 880 512
+// Hint: aplay -f S16_LE output.wav
+
 import (
-	"binary"
+	"bufio"
+	"encoding/binary"
 	"flag"
 	"io"
 	"log"
-	"net/http"
+	"math"
+	"os"
+	"strconv"
 )
 
-var flagSampleRate = flag.Int("r", 44100, "sample rate (in samples per second)")
-var flagOutputFilename = flag.Int("o", "output.wav", "wav file to write")
+var flagSampleRate = flag.Int("r", 8000, "sample rate (in samples per second)")
+var flagOutputFilename = flag.String("o", "output.wav", "wav file to write")
 
 // See https://docs.fileformat.com/audio/wav/
 type WavHeader struct {
@@ -71,8 +77,66 @@ func WriteWavHeader(dataSize int, w io.Writer) {
 func main() {
 	flag.Parse()
 
-	w, err := os.Create(*flagOutputFilename)
+	f, err := os.Create(*flagOutputFilename)
 	if err != nil {
 		log.Fatalf("Cannot create %q: %v", *flagOutputFilename, err)
+	}
+	defer f.Close()
+
+	w := bufio.NewWriter(f)
+	Synth(w)
+}
+
+func Synth(w io.Writer) {
+	var voices []chan float64       // A holder for the voices.
+	for _, a := range flag.Args() { // Create one voice per argument.
+		voice := make(chan float64, 10000)
+		go RunVoice(a, voice)
+		voices = append(voices, voice)
+	}
+
+	mixed := make(chan float64, 10000)
+	go RunMixer(voices, mixed) // The mixer adds the voice signals to make the mixed signal.
+
+	for y := range mixed { // Convert each mixed sample to an int16 sample.
+		sample := 10000 * y // Convert signal range [-1, 1] to [-10000, 10000].
+		if sample > 32000 { // Clip if higher than this.
+			sample = 32000
+		}
+		if sample < -32000 { // Clip if lower than this.
+			sample = -32000
+		}
+		err := binary.Write(w, binary.LittleEndian, int16(sample))
+		if err != nil {
+			log.Fatalf("binary.Write fails: %v", err)
+		}
+	}
+}
+
+func RunVoice(a string, voice chan float64) {
+	freq, err := strconv.ParseFloat(a, 64) // Parse the frequency.
+	if err != nil {
+		log.Fatalf("cannot ParseFloat %q: %v", a, err)
+	}
+	// Play for one second.
+	for i := 0; i < *flagSampleRate; i++ {
+		y := math.Sin(float64(i) * 2.0 * math.Pi * freq / float64(*flagSampleRate))
+		voice <- y // Output the sine wave (range is -1 to 1).
+	}
+	close(voice)
+}
+
+func RunMixer(voices []chan float64, mixed chan float64) {
+	for { // Until reading a voice fails because it is closed:
+		sum := 0.0 // Sum each of the voices.
+		for _, voice := range voices {
+			y, ok := <-voice
+			if !ok {
+				close(mixed)
+				return
+			}
+			sum += y
+		}
+		mixed <- sum // Write the sum to the mixed output.
 	}
 }
