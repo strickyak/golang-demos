@@ -2,13 +2,11 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 )
 
 func LogAnArg(label string, i int, s string) {
 	log.Printf("%s: Arg %d: %q", label, i, s)
-	println("***",i,s)
 }
 
 // LogOnce logs the args using a C-style for loop.
@@ -28,9 +26,8 @@ func LogAgain() {
 }
 
 func main() {
-	println("first")
-	fmt.Printf("second\n")
 	flag.Parse()
+	log.Printf("You provided %d args.", flag.NArg())
 	LogOnce()
 	LogAgain()
 }
