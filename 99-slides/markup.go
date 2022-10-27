@@ -112,7 +112,7 @@ const HEAD = `
       Page = 0;
       jump(Page);
     } else if (kc == 20) { // Ten
-      Page = 10;
+      Page += 10;
       jump(Page);
     }
       });

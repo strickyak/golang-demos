@@ -292,7 +292,7 @@ Everything else in Go passes by value.
 
 Interfaces are magic references to some underlying non-interface type.
 
-Interfaces act like pointers.
+Interfaces act like pointers, but you don't need the `*`.
 
 * `type Stringer interface { String() string }`
 
@@ -312,6 +312,10 @@ calling a method and see where it goes).
 * false
 
 * nil
+
+Empty slices are equal to nil.
+
+Empty strings are NOT equal to nil.
 
 
 ## Statements: quick and obvious
@@ -402,6 +406,7 @@ for {
   lines = append(lines, line)
 }
 
+fmt.Printf("There are %d lines\n", len(lines))
 for _, s := range lines {
   fmt.Printf("Got line %q\n", s)
 }
@@ -424,6 +429,7 @@ for {
   }
 }
 
+fmt.Printf("There are %d items\n", len(d))
 for k, v := range d {
   fmt.Printf("Line %q occured %d times\n", k, v)
 }
@@ -458,3 +464,156 @@ log.Panicf("Cannot open %q: %v", filename, error)
 
 log.Fatalf("Cannot create %q: %v", filename, error)
 ```
+
+## Demo 01: hello.go
+
+```
+$ cat 01-hello/hello.go
+     1	package main
+     2
+     3	import "fmt"
+     4
+     5	func main() {
+     6		fmt.Println("Hello World!")
+     7	}
+$ go run 01-hello/hello.go
+Hello World!
+$
+```
+
+## Demo 02: func.go
+
+```
+$ go run 02-func/func.go one two three
+2022/10/27 15:59:41 You provided 3 args.
+2022/10/27 15:59:41 once: Arg 0: "one"
+2022/10/27 15:59:41 once: Arg 1: "two"
+2022/10/27 15:59:41 once: Arg 2: "three"
+2022/10/27 15:59:41 again: Arg 0: "one"
+2022/10/27 15:59:41 again: Arg 1: "two"
+2022/10/27 15:59:41 again: Arg 2: "three"
+$
+```
+
+## Demo 03: string.go
+
+```
+$ go run 03-string/string.go Yak.Net taz.txt
+First arg is "Yak.Net", second arg is "taz.txt"
+Adding first and second arg gives "Yak.Nettaz.txt"
+Joined slowly gives "Yak.Nettaz.txt"
+Joined quicker gives "Yak.Nettaz.txt"
+Joined quickest gives "Yak.Nettaz.txt"
+... ToUpper gives "YAK.NETTAZ.TXT"
+... ToLower gives "yak.nettaz.txt"
+... Split on `.` gives []string{"Yak", "Nettaz", "txt"}
+$
+```
+
+## Demo 11: slice.go
+
+```
+$ go run 11-slice/slice.go
+2 is prime.
+3 is prime.
+5 is prime.
+7 is prime.
+11 is prime.
+13 is prime.
+17 is prime.
+19 is prime.
+23 is prime.
+29 is prime.
+31 is prime.
+37 is prime.
+41 is prime.
+43 is prime.
+47 is prime.
+53 is prime.
+59 is prime.
+61 is prime.
+67 is prime.
+71 is prime.
+73 is prime.
+79 is prime.
+83 is prime.
+89 is prime.
+97 is prime.
+$
+```
+
+## Demo 21: webserver.go
+
+```
+    11	func HelloWeb(w http.ResponseWriter, r *http.Request) {
+    12		fmt.Fprintf(w, "Hello, %q", html.EscapeString(r.URL.Path))
+    13	}
+    14
+    15	func main() {
+    16		flag.Parse()
+    17
+    18		http.HandleFunc("/", HelloWeb)
+    19
+    20		log.Print("Serving.  Go to `http://localhost:8080/foo/bar` in your web browser.")
+    21		log.Fatal(http.ListenAndServe("localhost:8080", nil))
+    22	}
+$ go run 21-webserver/webserver.go
+2022/10/27 16:05:42 Serving.  Go to `http://localhost:8080/foo/bar` in your web browser.
+^C
+signal: interrupt
+```
+
+## Demo 22: fileserver.go
+
+```
+     9	var PubDir = flag.String("pubdir", ".", "Directory to publish")
+    10
+    11	func main() {
+    12		flag.Parse()
+    13
+    14		http.Handle("/", http.FileServer(http.Dir(*PubDir)))
+    15
+    16		log.Print("Serving.  Go to `http://localhost:8080/` in your web browser.")
+    17		log.Fatal(http.ListenAndServe("localhost:8080", nil))
+    18	}
+$ go run 22-fileserver/fileserver.go
+2022/10/27 16:06:58 Serving.  Go to `http://localhost:8080/` in your web browser.
+^C
+signal: interrupt
+```
+
+## Demo 31: synth.go
+
+```
+$ go run 31-synth/synth.go c5,d5,e5,f5,g5
+$ file output.wav
+output.wav: RIFF (little-endian) data, WAVE audio, Microsoft PCM, 16 bit, mono 8000 Hz
+$
+```
+
+VLC plays the file on Windows or Linux.
+
+mplayer will play it on Linux.
+
+If you omit the WAV header (the -n option),
+on Linux you can use `aplay -f S16_LE output.wav`
+
+## Asking go programs for --help
+
+If a Go program uses `flag.Parse()`, which I recommend,
+you can ask it for `--help`:
+
+```
+$ go run 31-synth/synth.go --help
+Usage of /tmp/go-build1639908412/b001/exe/synth:
+  -n	omit WAV header; just raw S16_LE
+  -o string
+    	wav file to write (default "output.wav")
+  -r int
+    	sample rate (in samples per second) (default 8000)
+  -t float
+    	transpose this many steps up or down
+$
+```
+
+## END
