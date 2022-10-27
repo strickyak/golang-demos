@@ -3,15 +3,25 @@ package main
 // Hint: go run synth.go 220 440 880 512
 // Hint: aplay -f S16_LE output.wav
 
+// Octave Naming:
+// https://www.allaboutmusictheory.com/piano-keyboard/music-note-names/
+
+// A4 is 440 Hz:
+// https://en.wikipedia.org/wiki/A440_(pitch_standard)
+
+// Ode to Joy
+// https://www.ibiblio.org/mutopia/ftp/BeethovenLv/ode/ode-let.pdf
+
 import (
 	"bufio"
 	"encoding/binary"
 	"flag"
+	"fmt"
 	"io"
 	"log"
 	"math"
 	"os"
-	"strconv"
+	"strings"
 )
 
 var flagSampleRate = flag.Int("r", 8000, "sample rate (in samples per second)")
@@ -76,6 +86,9 @@ func WriteWavHeader(dataSize int, w io.Writer) {
 
 func main() {
 	flag.Parse()
+	if flag.NArg() < 1 {
+		log.Fatalf("At least 1 command line argument is required.")
+	}
 
 	f, err := os.Create(*flagOutputFilename)
 	if err != nil {
@@ -88,10 +101,10 @@ func main() {
 }
 
 func Synth(w io.Writer) {
-	var voices []chan float64       // A holder for the voices.
-	for _, a := range flag.Args() { // Create one voice per argument.
+	var voices []chan float64         // A holder for the voices.
+	for _, arg := range flag.Args() { // Create one voice per argument.
 		voice := make(chan float64, 10000)
-		go RunVoice(a, voice)
+		go RunVoice(arg, voice)
 		voices = append(voices, voice)
 	}
 
@@ -113,15 +126,21 @@ func Synth(w io.Writer) {
 	}
 }
 
-func RunVoice(a string, voice chan float64) {
-	freq, err := strconv.ParseFloat(a, 64) // Parse the frequency.
-	if err != nil {
-		log.Fatalf("cannot ParseFloat %q: %v", a, err)
-	}
-	// Play for one second.
-	for i := 0; i < *flagSampleRate; i++ {
-		y := math.Sin(float64(i) * 2.0 * math.Pi * freq / float64(*flagSampleRate))
-		voice <- y // Output the sine wave (range is -1 to 1).
+func RunVoice(arg string, voice chan float64) {
+	for _, a := range strings.Split(arg, ",") {
+		freq, ok := tones[a]
+		if !ok {
+			log.Fatalf("Unknown tone %q", a)
+		}
+		// Play for half a second.
+		for i := 0; i < *flagSampleRate/2; i++ {
+			y := math.Sin(float64(i) * 2.0 * math.Pi * freq / float64(*flagSampleRate))
+			voice <- y // Output the sine wave (range is -1 to 1).
+		}
+		// One tenth of a second gap.
+		for i := 0; i < *flagSampleRate/10; i++ {
+			voice <- 0
+		}
 	}
 	close(voice)
 }
@@ -139,4 +158,30 @@ func RunMixer(voices []chan float64, mixed chan float64) {
 		}
 		mixed <- sum // Write the sum to the mixed output.
 	}
+}
+
+////  Begin Tone Math
+
+var (
+	chromaticScale = []string{"a", "a#", "b", "c", "c#", "d", "d#", "e", "f", "f#", "g", "g#"}
+
+	tones = make(map[string]float64)
+)
+
+func init() {
+	octave := 0
+	halfStep := -4 * 12 // 4 octaves below the anchor A4 == 440 Hz
+	for octave < 9 {
+		for _, note := range chromaticScale {
+			if note == "c" {
+				octave++
+			}
+			noteAndOctave := fmt.Sprintf("%s%d", note, octave)
+			// How the even-tempered scale works:
+			tones[noteAndOctave] = 440.0 * math.Pow(2.0, float64(halfStep)/12.0)
+			halfStep++
+		}
+	}
+	// log.Printf("Tones: %#v", tones)
+	tones["_"] = 0.0 // Add "_" for a rest, with frequency 0.
 }
