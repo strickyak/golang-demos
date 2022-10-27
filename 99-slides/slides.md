@@ -98,6 +98,11 @@ $ go version
 go version go1.17.5 linux/amd64
 ```
 
+[GitHub Git Guides Install Git on Windows] -> "Git for Windows" ->
+I chose default or recommended options for everything except
+I chose to use "main" instead of "master".  
+I use the included "Git Bash" (mingw64 terminal) for my shell.
+
 ## Fetch today's Demo programs
 
 * It might help to install "git".
@@ -453,4 +458,3 @@ log.Panicf("Cannot open %q: %v", filename, error)
 
 log.Fatalf("Cannot create %q: %v", filename, error)
 ```
-

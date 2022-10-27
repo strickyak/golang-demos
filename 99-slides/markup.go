@@ -52,6 +52,7 @@ const HEAD = `
 
     <style>
 			body {
+				background-color: #330033;
 				/* color: #FFFFFF; */
 				color: #4444FF;
 				font-family: "Trebuchet Ms", Verdana, sans-serif;
@@ -61,20 +62,17 @@ const HEAD = `
 			}
 
 			:visited {
-				XXcolor: #FFFF22;
-				color: #8800ee;
+				color: #9900ff;
 				font-family: monospace;
 				text-decoration: none;
 			}
 			:link {
-				XXcolor: #FFFF22;
-				color: #8800ee;
+				color: #9900ff;
 				font-family: monospace;
 				text-decoration: none;
 			}
 			:hover {
-				XXcolor: #FFFF22;
-				color: #8800ee;
+				color: #9900ff;
 				font-family: monospace;
 				text-decoration: none;
 			}
@@ -82,57 +80,12 @@ const HEAD = `
 		  pre {
 			  width: 95%;
 				padding: 0.6em;
-				/*  background-color: #111133; */
-				background-color: #000022;
+				background-color: #000000;
 			}
 			code {
-				background-color: #000022;
-				/* background-color: #111111; */
+				background-color: #000000;
 				color: #44cc44;
-				/* margin: 0.2em; */
-				/* font-size: 500%; */
-				/* font-family: courier, monospace; */
 				font-family: monospace;
-			}
-
-
-
-			.XXXgreen {
-				color: #00FF00;
-				font-size: 500%;
-				/* font-family: courier, monospace; */
-				font-family: monospace;
-			}
-			.XXXyellow {
-				color: #FFFF00;
-				font-size: 500%;
-				font-family: monospace;
-			}
-			.XXXbig-green {
-				color: #00FF00;
-				font-size: 750%;
-				font-family: monospace;
-			}
-			.XXXbig-yellow {
-				color: #FFFF00;
-				font-size: 650%;
-				font-family: monospace;
-			}
-			.XXXtitle {
-				color: #aaaaaa;
-				font-size: 250%;
-				font-family: Arial, sans-serif;
-				text-align: center;
-			}
-			.XXXprose {
-				color: #FFFF00;
-				font-size: 375%;
-				font-family: Arial, sans-serif;
-			}
-			.XXXgloss {
-				color: #bbbbbb;
-				font-size: 150%;
-				font-family: Arial, sans-serif;
 			}
     </style>
 
@@ -166,10 +119,10 @@ const HEAD = `
 
     </script>
   </head>
-  <body bgcolor="#220022"  was="#000055">
-	<small>
-	  Use "n" for next slide; "p" for previous slide; "h" to go home to first slide.
-	</small>
+  <body>
+	  <small>
+	    Use "n" for next slide; "p" for previous slide; "h" to go home to first slide.
+	  </small>
 `
 
 const TAIL = `
