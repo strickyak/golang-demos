@@ -25,6 +25,7 @@ import (
 )
 
 var flagSampleRate = flag.Int("r", 8000, "sample rate (in samples per second)")
+var flagTranspose = flag.Float64("t", 0, "transpose this many steps up or down")
 var flagOutputFilename = flag.String("o", "output.wav", "wav file to write")
 
 // See https://docs.fileformat.com/audio/wav/
@@ -90,14 +91,16 @@ func main() {
 		log.Fatalf("At least 1 command line argument is required.")
 	}
 
-	f, err := os.Create(*flagOutputFilename)
+	file, err := os.Create(*flagOutputFilename)
 	if err != nil {
 		log.Fatalf("Cannot create %q: %v", *flagOutputFilename, err)
 	}
-	defer f.Close()
+	defer file.Close()
 
-	w := bufio.NewWriter(f)
+	InitTones()
+	w := bufio.NewWriter(file)
 	Synth(w)
+	w.Flush()
 }
 
 func Synth(w io.Writer) {
@@ -163,25 +166,27 @@ func RunMixer(voices []chan float64, mixed chan float64) {
 ////  Begin Tone Math
 
 var (
-	chromaticScale = []string{"a", "a#", "b", "c", "c#", "d", "d#", "e", "f", "f#", "g", "g#"}
-
+	chromaticScale = []string{
+		"a", "a#", "b", "c", "c#", "d",
+		"d#", "e", "f", "f#", "g", "g#",
+	}
 	tones = make(map[string]float64)
 )
 
-func init() {
+func InitTones() {
 	octave := 0
-	halfStep := -4 * 12 // 4 octaves below the anchor A4 == 440 Hz
+	halfStep := *flagTranspose - 4*12 // 4 octaves below the anchor A4 == 440 Hz
 	for octave < 9 {
 		for _, note := range chromaticScale {
 			if note == "c" {
 				octave++
 			}
-			noteAndOctave := fmt.Sprintf("%s%d", note, octave)
+			noteAndOctave := fmt.Sprintf("%s%d", note, octave) // e.g. c4
 			// How the even-tempered scale works:
 			tones[noteAndOctave] = 440.0 * math.Pow(2.0, float64(halfStep)/12.0)
 			halfStep++
 		}
 	}
-	// log.Printf("Tones: %#v", tones)
 	tones["_"] = 0.0 // Add "_" for a rest, with frequency 0.
+	// log.Printf("Tones: %#v", tones)
 }
