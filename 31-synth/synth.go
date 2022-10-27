@@ -27,6 +27,7 @@ import (
 var flagSampleRate = flag.Int("r", 8000, "sample rate (in samples per second)")
 var flagTranspose = flag.Float64("t", 0, "transpose this many steps up or down")
 var flagOutputFilename = flag.String("o", "output.wav", "wav file to write")
+var flagNoWavHeader = flag.Bool("n", false, "omit WAV header; just raw S16_LE")
 
 func main() {
 	flag.Parse()
@@ -42,7 +43,9 @@ func main() {
 
 	InitTones()
 	w := bufio.NewWriter(file)
-	WriteWavHeader(900*(*flagSampleRate), w) // Lie and say 900 seconds (15 min).
+	if !*flagNoWavHeader {
+		WriteWavHeader(900*(*flagSampleRate), w) // Lie and say 900 seconds (15 min).
+	}
 	Synth(w)
 	w.Flush()
 }
