@@ -1,0 +1,698 @@
+
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <style>
+			body {
+				background-color: #330033;
+				/* color: #FFFFFF; */
+				color: #4444FF;
+				font-family: "Trebuchet Ms", Verdana, sans-serif;
+				/* font-size: 500%; */
+				/* font-family: courier, monospace; */
+				/* font-family: monospace;*/
+			}
+
+			:visited {
+				color: #9900ff;
+				font-family: monospace;
+				text-decoration: none;
+			}
+			:link {
+				color: #9900ff;
+				font-family: monospace;
+				text-decoration: none;
+			}
+			:hover {
+				color: #9900ff;
+				font-family: monospace;
+				text-decoration: none;
+			}
+
+		  pre {
+			  width: 95%;
+				padding: 0.6em;
+				background-color: #000000;
+			}
+			code {
+				background-color: #000000;
+				color: #44cc44;
+				font-family: monospace;
+			}
+    </style>
+
+    <script src="./jquery-3.3.1.min.js"></script>
+
+    <script>
+      Page = -1;
+
+      // Thanks https://stackoverflow.com/questions/13735912/anchor-jumping-by-using-javascript
+      function jump(h) {
+    location.href = "#" + h;
+      }
+
+      $(document).keypress(function(e){
+    kc = e.keyCode & 31;
+    if (kc == 14) {  // Next
+      ++Page;
+      jump(Page);
+    } else if (kc == 16) { // Prev
+      --Page;
+      if (Page < 0) Page = 0;
+      jump(Page);
+    } else if (kc == 8) { // Home
+      Page = 0;
+      jump(Page);
+    } else if (kc == 20) { // Ten
+      Page += 10;
+      jump(Page);
+    }
+      });
+
+    </script>
+  </head>
+  <body>
+	  <small>
+	    Use "n" for next slide; "p" for previous slide; "h" to go home to first slide.
+	  </small>
+
+<h1><a name=0><small>0.</small></a> &nbsp; Intro to Go Language</h1>
+
+<p>by Henry Strickland</p>
+
+<p><code>strick@yak.net</code></p>
+
+<p><a href="https://github.com/strickyak/golang-demo/" rel="nofollow">https://github.com/strickyak/golang-demo/</a></p>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=1><small>1.</small></a> &nbsp; Broad Outline</h2>
+
+<ul>
+<li>Why I choose Go</li>
+<li>Install Go and my Demos</li>
+<li>Syntax overview</li>
+<li>Command-line demos (e.g. Hello World)</li>
+<li>Webserver demo</li>
+<li>Threaded Music-Synthesizer demo</li>
+</ul>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=2><small>2.</small></a> &nbsp; Why Go?</h2>
+
+<p>I know and use lots of programming languages:
+C, C++, Python, Tcl, Java, Forth, Lisp, APL, Haskell,
+Bourne Shell, Basic09.</p>
+
+<p>But recently I often pick Go for hobby projects
+and recreational programming.  I’ve used Go for</p>
+
+<ul>
+<li>My own 6809 emulator (doing_os9/gomar/emu)</li>
+<li>My own APL interpreter (livy-apl)</li>
+<li>My own Tcl interpreter (chirp-lang)</li>
+<li>My own Python-to-Go translater (rye)</li>
+<li>MIDI Player (trig-synth)</li>
+<li>Ham Radio spectrum decoder (for QRSS)</li>
+<li>Ham Radio tone generation (for QRSS)</li>
+<li>File utilities (e.g. decoding and encoding formats)</li>
+</ul>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=3><small>3.</small></a> &nbsp; Why Go?</h2>
+
+<ul>
+<li><p>Go is fun!  (Rob Pike said he wanted it to be “fun to use”
+like Python.  It works for me!)</p></li>
+
+<li><p>I still like my Go code, even when I come back to it
+years later.</p></li>
+</ul>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=4><small>4.</small></a> &nbsp; Why Go?</h2>
+
+<ul>
+<li>Fast: Compiles to native code (like C, C++, Rust).</li>
+<li>Garbage collected (like Python, Java, C#), mostly in a separate thread!</li>
+<li>Designed for threading (like Java, C#). (There’s so many
+CPU cores in your machines today – use them!)</li>
+<li>Quite “safe” (not as safe as Rust, but much much easier to use).</li>
+<li>Go’s lightweight “goroutines” and “channels” are influencing other languages.</li>
+<li>Modules and methods and interfaces and clear public/private distinctions provide strong encapsulation.</li>
+<li>Interfaces and dynamic dispatch and reflection provide flexability.</li>
+<li>Very little magic in the “white space”, so it’s easy to understand other people’s code (including <em>your own</em> code, years later).</li>
+</ul>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=5><small>5.</small></a> &nbsp; Go is conservative.</h2>
+
+<ul>
+<li>Slow to add more features.</li>
+<li>Very serious about backwards compatibility.</li>
+<li>Stable, well-designed standard libraries.</li>
+<li>Repeatable builds with strong module version dependency graph.</li>
+<li>(or disable it with <code>GO111MODULE=off</code>)</li>
+<li>The core language required unanimous approval from the three original designers.</li>
+</ul>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=6><small>6.</small></a> &nbsp; Go team learned from experience</h2>
+
+<ul>
+<li>Based on decades of experience at Bell Labs (e.g. Plan9) and Google’s warehouse-scale computing clusters</li>
+<li>Including specific frustrations with Google3 code in C++ (e.g. web indexing and web search serving) and other Google3 code in Java.</li>
+</ul>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=7><small>7.</small></a> &nbsp; Go is non-orthodox</h2>
+
+<ul>
+<li><p>Lacks many checkboxes on the list of features that
+so many “othodox” langauges are all converging to.</p></li>
+
+<li><p>You Ain’t Gonna Need Them!</p></li>
+</ul>
+
+<p>No OO inheritance. No overloaded functions or methods.
+No overloaded operators.  No classes.  No decorators.
+No promotion.  No assert.  No conditional expression.
+Not a functional language.</p>
+
+<p>No try/catch (but panic/recover are similar).</p>
+
+<p>No Generics/Templates (until the latest release!)</p>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=8><small>8.</small></a> &nbsp; Install Go</h2>
+
+<p>Download from <a href="https://go.dev/dl/" rel="nofollow">https://go.dev/dl/</a>
+for Windows, MacOS (ARM64 or x86-64), or Linux (amd64).</p>
+
+<p>Debian/Ubuntu/Pi: <code>sudo apt install golang</code></p>
+
+<p>Then try this:</p>
+
+<pre><code>$ go version
+go version go1.17.5 linux/amd64
+</code></pre>
+
+<p>[GitHub Git Guides Install Git on Windows] -&gt; “Git for Windows” -&gt;
+I chose default or recommended options for everything except
+I chose to use “main” instead of “master”.<br/>
+I use the included “Git Bash” (mingw64 terminal) for my shell.</p>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=9><small>9.</small></a> &nbsp; Fetch today’s Demo programs</h2>
+
+<ul>
+<li>It might help to install “git”.</li>
+<li>Or you can download my raw Go source files from the github web interface.</li>
+</ul>
+
+<p>Web Browser: <a href="https://github.com/strickyak/golang-demos" rel="nofollow">https://github.com/strickyak/golang-demos</a></p>
+
+<p>Git: <code>git clone https://github.com/strickyak/golang-demos.git</code></p>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=10><small>10.</small></a> &nbsp; [syntax] Always Left-to-Right</h2>
+
+<p>The thing being defined always is always named <em>before</em> its definition.</p>
+
+<p>Brief examples (we’ll visit them in more detail):</p>
+
+<p><code>const Limit = 999</code></p>
+
+<p><code>var Marker byte = 255</code></p>
+
+<p><code>type Bucket *map[int][]*Fruit</code></p>
+
+<p><code>func Squared(x int) (int, error) { return x*x, nil }</code></p>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=11><small>11.</small></a> &nbsp; [syntax] Global Sections</h2>
+
+<p>The first word in each global section is one of these six keywords:</p>
+
+<ul>
+<li><code>package</code></li>
+<li><code>import</code></li>
+<li><code>const</code></li>
+<li><code>type</code></li>
+<li><code>var</code></li>
+<li><code>func</code></li>
+</ul>
+
+<p>followed immediately by the word being defined,
+followed by the details of the definition.</p>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=12><small>12.</small></a> &nbsp; [syntax] <code>package</code></h2>
+
+<p>Today we will only use</p>
+
+<pre><code>package main
+</code></pre>
+
+<p>This must be the first section in your program
+(besides comments).</p>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=13><small>13.</small></a> &nbsp; [syntax] <code>import</code></h2>
+
+<pre><code>import (
+  &#34;flag&#34;
+  &#34;fmt&#34;
+  &#34;net/http&#34;
+  &#34;math&#34;
+  apl &#34;github.com/strickyak/livy-apl&#34;
+)
+</code></pre>
+
+<p>The <code>import</code> section is the second section in your program.
+It comes after the <code>package</code> section.</p>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=14><small>14.</small></a> &nbsp; [syntax] <code>const</code></h2>
+
+<p>Use <code>const</code> for <em>Compile Time</em> constants
+(like <code>constexpr</code> in C++, not C++ <code>const</code>).</p>
+
+<pre><code>const MaxUnsignedInt64 = 0xFFFFFFFFFFFFFFFF
+const Greeting = &#34;Hello World!&#34;
+const PageTemplate = `
+  &lt;h1&gt;{{.Title}}&lt;/h1&gt;
+  &lt;div&gt;{{.Content}}&lt;/div&gt; `
+
+const (
+  E   = 2.718281828459
+  Tau  = 2.0 * math.Pi
+)
+</code></pre>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=15><small>15.</small></a> &nbsp; [syntax] <code>type</code></h2>
+
+<p>Technically, <code>type</code> creates <em>new types</em>, not aliases
+to existing types.</p>
+
+<pre><code>type Time uint64
+
+type Apple struct {
+  Color    string
+  NumWorms int
+  Birthday Time
+}
+
+type AppleEater func (*Apple) error
+</code></pre>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=16><small>16.</small></a> &nbsp; [syntax] <code>func</code></h2>
+
+<pre><code>func Twice(x int) int {
+  return x + x
+}
+func Double(x string) string {
+  return x + x
+}
+func Hypotenuse(x, y float64) float64 {
+  return math.Sqrt(x*x + y*y)
+}
+</code></pre>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=17><small>17.</small></a> &nbsp; [syntax] <code>func</code> for methods</h2>
+
+<p>The receiver variable (like <code>this</code> or `self)
+is in parentheses before the method name.
+Usually it will be a pointer to a struct type.</p>
+
+<pre><code>func (a *Apple) String() {
+  return fmt.Sprintf(&#34;A %s apple with %d worms.&#34;,
+                     a.Color, a.NumWorms)
+}
+</code></pre>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=18><small>18.</small></a> &nbsp; [syntax] Comments</h2>
+
+<pre><code>/* Just like in C */
+
+// Or just like
+// in C++, Java, C#, Javascript, etc.
+</code></pre>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=19><small>19.</small></a> &nbsp; <code>go doc</code></h2>
+
+<pre><code>go doc net/http
+
+go doc net/http.Header
+
+go doc net/http.Header.Get
+</code></pre>
+
+<p>The problem is usually knowing where to start, like <code>net/http</code>.
+Search the internet to find out.</p>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=20><small>20.</small></a> &nbsp; Running a Go program</h2>
+
+<pre><code>go run hello.go -- args...
+</code></pre>
+
+<p>Go compiles so quickly, you can usually compile every time
+you run.  The <code>go run</code> command does this for you.
+You can separate your arguments from the <code>go run</code> arguments
+with <code>--</code> if you need to.</p>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=21><small>21.</small></a> &nbsp; Types: Atomic</h2>
+
+<ul>
+<li><p>bool</p></li>
+
+<li><p>int, uint, int8, byte=uint8, int16, uint16, int32, rune=uint32,
+int64, uint64, uintptr</p></li>
+
+<li><p>float32, float64, complex64, complex128</p></li>
+
+<li><p>string</p></li>
+</ul>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=22><small>22.</small></a> &nbsp; Types: Composed</h2>
+
+<ul>
+<li><p>pointers: <code>*Apple</code></p></li>
+
+<li><p>structs: <code>struct { Name string, Zip uint }</code></p></li>
+
+<li><p>slice: <code>[]string</code></p></li>
+
+<li><p>map: <code>map[string]*Apple</code></p></li>
+
+<li><p>channel:  <code>chan float64</code></p></li>
+</ul>
+
+<p>Those last three (slices, maps, channels) pass by reference.
+Everything else in Go passes by value.</p>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=23><small>23.</small></a> &nbsp; Types: Interfaces</h2>
+
+<p>Interfaces are magic references to some underlying non-interface type.</p>
+
+<p>Interfaces act like pointers, but you don’t need the <code>*</code>.</p>
+
+<ul>
+<li><p><code>type Stringer interface { String() string }</code></p></li>
+
+<li><p>Frequently used:  <code>error</code>, <code>io.Reader</code>, <code>io.Writer</code>, <code>fmt.Stringer</code></p></li>
+
+<li><p><code>interface {}</code> matches ANY TYPE IN GO.</p></li>
+</ul>
+
+<p>There are ways to find out the underlying type
+(e.g. type assertions, type switches, reflection,
+calling a method and see where it goes).</p>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=24><small>24.</small></a> &nbsp; Special constants</h2>
+
+<ul>
+<li><p>true</p></li>
+
+<li><p>false</p></li>
+
+<li><p>nil</p></li>
+</ul>
+
+<p>Empty slices are equal to nil.</p>
+
+<p>Empty strings are NOT equal to nil.</p>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=25><small>25.</small></a> &nbsp; Statements: quick and obvious</h2>
+
+<ul>
+<li><p><code>return foo</code></p></li>
+
+<li><p><code>return foo, bar</code></p></li>
+
+<li><p><code>break</code> and <code>continue</code></p></li>
+</ul>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=26><small>26.</small></a> &nbsp; Statements: assignment</h2>
+
+<pre><code>var a int  // Creates variable a
+a = b + c
+</code></pre>
+
+<pre><code>a := b + c  // Creates variable a
+</code></pre>
+
+<pre><code>a += b + c
+a++
+a--
+</code></pre>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=27><small>27.</small></a> &nbsp; Statements: if</h2>
+
+<pre><code>if x &lt; 2 {
+  result = 1
+} else {
+  result = x * factorial(x-1)
+}
+</code></pre>
+
+<pre><code>if p := something(); p != nil {
+  p.frobnicate()
+}
+</code></pre>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=28><small>28.</small></a> &nbsp; Statements: for</h2>
+
+<pre><code>for {         // Loops forever.
+  step()
+}
+</code></pre>
+
+<pre><code>line := GetLine()
+for line != &#34;&#34; {  // Loops until false.
+  line = GetLine()
+}
+</code></pre>
+
+<pre><code>for i := 1; i &lt;= 10; i++ {
+  fmt.Printf(&#34;counting %d\n&#34;, i)
+}
+</code></pre>
+
+<pre><code>for key, value := range aSliceOrMap {
+  fmt.Printf(&#34;Key is %v and value is %v\n&#34;, key, value)
+}
+</code></pre>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=29><small>29.</small></a> &nbsp; Statements: <code>defer</code> and <code>go</code></h2>
+
+<pre><code>defer fileDescriptor.Close()
+
+go RunSomething(i, data)
+</code></pre>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=30><small>30.</small></a> &nbsp; Statements: Slice type</h2>
+
+<pre><code>var lines []string
+for {
+  line := GetLine()
+  if line == &#34;&#34; {
+    break
+  }
+  lines = append(lines, line)
+}
+
+fmt.Printf(&#34;There are %d lines\n&#34;, len(lines))
+for _, s := range lines {
+  fmt.Printf(&#34;Got line %q\n&#34;, s)
+}
+</code></pre>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=31><small>31.</small></a> &nbsp; Statements: Map type</h2>
+
+<pre><code>d := make(map[string]int)
+for {
+  line := GetLine()
+  if line == &#34;&#34; {
+    break
+  }
+  x, ok := d[line]
+  if ok {
+    d[line] += x
+  } else {
+    d[line] = x
+  }
+}
+
+fmt.Printf(&#34;There are %d items\n&#34;, len(d))
+for k, v := range d {
+  fmt.Printf(&#34;Line %q occured %d times\n&#34;, k, v)
+}
+</code></pre>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=32><small>32.</small></a> &nbsp; Statements: Channel type</h2>
+
+<pre><code>pipe := make(chan float64, 1000)  // Buffers 1000 items.
+
+pipe &lt;- 3.14
+
+close(pipe)
+
+x, ok := &lt;-pipe   // ok gets false if pipe is closed.
+</code></pre>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=33><small>33.</small></a> &nbsp; Statements: Printf &amp; friends</h2>
+
+<pre><code>fmt.Printf(&#34;Hello %s, you are visitor %d\n&#34;, name, nth)
+
+fmt.Fprintf(w, &#34;Hello %s, you are visitor %d\n&#34;, name, nth)
+
+message := fmt.Sprintf(&#34;%d: %s&#34;, nth, name)
+
+log.Printf(&#34;Funny syntax in %q: %v&#34;, filename, error)
+
+log.Panicf(&#34;Cannot open %q: %v&#34;, filename, error)
+
+log.Fatalf(&#34;Cannot create %q: %v&#34;, filename, error)
+</code></pre>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=34><small>34.</small></a> &nbsp; Demo 01: hello.go</h2>
+
+<pre><code>$ cat 01-hello/hello.go
+     1	package main
+     2
+     3	import &#34;fmt&#34;
+     4
+     5	func main() {
+     6		fmt.Println(&#34;Hello World!&#34;)
+     7	}
+$ go run 01-hello/hello.go
+Hello World!
+$
+</code></pre>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=35><small>35.</small></a> &nbsp; Demo 02: func.go</h2>
+
+<pre><code>$ go run 02-func/func.go one two three
+2022/10/27 15:59:41 You provided 3 args.
+2022/10/27 15:59:41 once: Arg 0: &#34;one&#34;
+2022/10/27 15:59:41 once: Arg 1: &#34;two&#34;
+2022/10/27 15:59:41 once: Arg 2: &#34;three&#34;
+2022/10/27 15:59:41 again: Arg 0: &#34;one&#34;
+2022/10/27 15:59:41 again: Arg 1: &#34;two&#34;
+2022/10/27 15:59:41 again: Arg 2: &#34;three&#34;
+$
+</code></pre>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=36><small>36.</small></a> &nbsp; Demo 03: string.go</h2>
+
+<pre><code>$ go run 03-string/string.go Yak.Net taz.txt
+First arg is &#34;Yak.Net&#34;, second arg is &#34;taz.txt&#34;
+Adding first and second arg gives &#34;Yak.Nettaz.txt&#34;
+Joined slowly gives &#34;Yak.Nettaz.txt&#34;
+Joined quicker gives &#34;Yak.Nettaz.txt&#34;
+Joined quickest gives &#34;Yak.Nettaz.txt&#34;
+... ToUpper gives &#34;YAK.NETTAZ.TXT&#34;
+... ToLower gives &#34;yak.nettaz.txt&#34;
+... Split on `.` gives []string{&#34;Yak&#34;, &#34;Nettaz&#34;, &#34;txt&#34;}
+$
+</code></pre>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=37><small>37.</small></a> &nbsp; Demo 11: slice.go</h2>
+
+<pre><code>$ go run 11-slice/slice.go
+2 is prime.
+3 is prime.
+5 is prime.
+7 is prime.
+11 is prime.
+13 is prime.
+17 is prime.
+19 is prime.
+23 is prime.
+29 is prime.
+31 is prime.
+37 is prime.
+41 is prime.
+43 is prime.
+47 is prime.
+53 is prime.
+59 is prime.
+61 is prime.
+67 is prime.
+71 is prime.
+73 is prime.
+79 is prime.
+83 is prime.
+89 is prime.
+97 is prime.
+$
+</code></pre>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=38><small>38.</small></a> &nbsp; Demo 21: webserver.go</h2>
+
+<pre><code>    11	func HelloWeb(w http.ResponseWriter, r *http.Request) {
+    12		fmt.Fprintf(w, &#34;Hello, %q&#34;, html.EscapeString(r.URL.Path))
+    13	}
+    14
+    15	func main() {
+    16		flag.Parse()
+    17
+    18		http.HandleFunc(&#34;/&#34;, HelloWeb)
+    19
+    20		log.Print(&#34;Serving.  Go to `http://localhost:8080/foo/bar` in your web browser.&#34;)
+    21		log.Fatal(http.ListenAndServe(&#34;localhost:8080&#34;, nil))
+    22	}
+$ go run 21-webserver/webserver.go
+2022/10/27 16:05:42 Serving.  Go to `http://localhost:8080/foo/bar` in your web browser.
+^C
+signal: interrupt
+</code></pre>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=39><small>39.</small></a> &nbsp; Demo 22: fileserver.go</h2>
+
+<pre><code>     9	var PubDir = flag.String(&#34;pubdir&#34;, &#34;.&#34;, &#34;Directory to publish&#34;)
+    10
+    11	func main() {
+    12		flag.Parse()
+    13
+    14		http.Handle(&#34;/&#34;, http.FileServer(http.Dir(*PubDir)))
+    15
+    16		log.Print(&#34;Serving.  Go to `http://localhost:8080/` in your web browser.&#34;)
+    17		log.Fatal(http.ListenAndServe(&#34;localhost:8080&#34;, nil))
+    18	}
+$ go run 22-fileserver/fileserver.go
+2022/10/27 16:06:58 Serving.  Go to `http://localhost:8080/` in your web browser.
+^C
+signal: interrupt
+</code></pre>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=40><small>40.</small></a> &nbsp; Demo 31: synth.go</h2>
+
+<pre><code>$ go run 31-synth/synth.go c5,d5,e5,f5,g5
+$ file output.wav
+output.wav: RIFF (little-endian) data, WAVE audio, Microsoft PCM, 16 bit, mono 8000 Hz
+$
+</code></pre>
+
+<p>VLC plays the file on Windows or Linux.</p>
+
+<p>mplayer will play it on Linux.</p>
+
+<p>If you omit the WAV header (the -n option),
+on Linux you can use <code>aplay -f S16_LE output.wav</code></p>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=41><small>41.</small></a> &nbsp; Asking go programs for –help</h2>
+
+<p>If a Go program uses <code>flag.Parse()</code>, which I recommend,
+you can ask it for <code>--help</code>:</p>
+
+<pre><code>$ go run 31-synth/synth.go --help
+Usage of /tmp/go-build1639908412/b001/exe/synth:
+  -n	omit WAV header; just raw S16_LE
+  -o string
+    	wav file to write (default &#34;output.wav&#34;)
+  -r int
+    	sample rate (in samples per second) (default 8000)
+  -t float
+    	transpose this many steps up or down
+$
+</code></pre>
+
+<br><br><br><br><br><br><br><br><br><br><hr><br><h2><a name=42><small>42.</small></a> &nbsp; END</h2>
+
+
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+That's all, folks!
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+  </body>
+</html>
+
