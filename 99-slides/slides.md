@@ -4,7 +4,7 @@ by Henry Strickland
 
 `strick@yak.net`
 
-https://github.com/strickyak/golang-demo/
+https://github.com/strickyak/golang-demos/
 
 ## Broad Outline
 
@@ -222,7 +222,7 @@ is in parentheses before the method name.
 Usually it will be a pointer to a struct type.
 
 ```
-func (a *Apple) String() {
+func (a *Apple) String() string {
   return fmt.Sprintf("A %s apple with %d worms.",
                      a.Color, a.NumWorms)
 }
